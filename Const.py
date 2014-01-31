@@ -3,8 +3,8 @@ Created on 2014-1-30
 
 @author: bell
 '''
-AES_KEY = {'jp':{'res': 'A1dPUcrvur2CRQyl', 'helper':
-          'A1dPUcrvur2CRQyl', 'crypt': 'uH9JF2cHf6OppaC1'}}
+AES_KEY = {'jp': {'res': 'A1dPUcrvur2CRQyl', 'helper':
+                  'A1dPUcrvur2CRQyl', 'crypt': 'uH9JF2cHf6OppaC1'}}
 RSA_KEY_POOL = [
     "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANV2ohKiVs/2cOiGN7TICmQ/NbkuellbTtcKbuDbIlBMocH+Eu0n2nBYZQ2xQbAv+E9na8K2FyMyVY4+RIYEJ+0CAwEAAQ==",
     "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOLtTe70uQZ2BAneeTyNezMH/yn/uDu6qabQ3XHhmqqW8C4ZLxG7uW6bNmUdZQSUk8dO2+7ZTbN5lQw/u70Av2ECAwEAAQ==",
@@ -18,9 +18,9 @@ RSA_KEY_POOL = [
     "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANqJlJznVfrsXd/Nnn4L7E7Kcz2u1YwIExrJC3uyxsEk+HiCnNJ8ZUFtkc7XeZKEyw2UFfiQ73SOFAzhVfkCCS0CAwEAAQ==",
 ]
 
-SERVER_ADDRESS = {'jp':'http://web.million-arthurs.com/connect/app/'}
+SERVER_ADDRESS = {'jp': 'http://web.million-arthurs.com/connect/app/'}
 
-HEADER={'Accept-Encoding': 'gzip, deflate',
-                 'User-Agent': 'Million/250 (SBM203SH; SBM203SH; 4.1.2) SBM/SBM203SH/SBM203SH:4.1.2/S0024/00.00.00:user/release-keys GooglePlay',
-                 'Content-Type': 'application/x-www-form-urlencoded'
-                 }
+HEADER = {'Accept-Encoding': 'gzip, deflate',
+          'User-Agent': 'Million/250 (SBM203SH; SBM203SH; 4.1.2) SBM/SBM203SH/SBM203SH:4.1.2/S0024/00.00.00:user/release-keys GooglePlay',
+          'Content-Type': 'application/x-www-form-urlencoded'
+          }

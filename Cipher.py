@@ -24,6 +24,8 @@ class Crypter():
     def __pad(self,string):
         return string  + (16 - len(string) % 16) * chr(16 - len(string) % 16)
     
+    def __unpad(self,string):
+        return string.rstrip(chr(11))
     #used to encode post data
     #plain -> AES ECB -> base64
         
@@ -32,4 +34,4 @@ class Crypter():
     
     #decrypt data form server
     def decrypt(self,data):
-        return self.__AES_cipher.decrypt(data)
+        return self.__unpad(self.__AES_cipher.decrypt(data))
