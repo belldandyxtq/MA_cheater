@@ -27,7 +27,8 @@ class Player():
         
         _list={'id':[],
                'name':[]}
-        return self.__change_list(self.__xmlParser.start_parse(_content,_list),'id','name')
+        _data=self.__xmlParser.start_parse(_content,_list)
+        return _data , self.__change_list(_data,'id','name')
     
     def __get_floor(self,areaID):
         _url='floor'
@@ -35,7 +36,8 @@ class Player():
         _content,_header=self.__poster.post(_url,postdata = _postdata)
         _list={'id':[],
                'progress':[]}
-        return self.__change_list(self.__xmlParser.start_parse(_content,_list),'id','progress')
+        _data=self.__xmlParser.start_parse(_content,_list)
+        return  _data , self.__change_list(_data,'id','progress')
         
     def __do_explore(self,areaID,floorID,auto_explore='0',auto_build='1'):
         _url='guild_explore'
@@ -47,18 +49,19 @@ class Player():
         _list={'id':[],
                'progress':[]}
         _data=self.__xmlParser.start_parse(_content,_list)
-        f=open('D:/milliondata/explore%s%s' % (floorID,_data['progress'][0]),'w')
+        f=open('/Users/xtq/milliondata/explore%s%s' % (floorID,_data['progress'][0]),'w')
         f.write(_content)
         f.close()
         return _data['progress'][0]
         
     def explore(self):
-        _area = self.__get_area()
-        _floor = self.__get_floor('108001')
-        for each in _floor:
-            if '100' != _floor[each]:
-                while '100' != self.__do_explore('108001',each):
-                    pass
+        _list,_area = self.__get_area()
+        for now_area in _area:
+            _floor = self.__get_floor(now_area)
+            for now_floor in _floor:
+                if '100' != _floor[now_floor]:
+                    while '100' != self.__do_explore(now_area,now_floor):
+                        pass
     
     def fairy(self):
         _url='fairy_select'
@@ -70,6 +73,7 @@ class Player():
         _list={'discoverer_id':[],
                'serial_id':[],}
         _data=self.__xmlParser.start_parse(_content,_list)
+            
         #f=open('D:/milliondata/fairy_select','w')
         #f.write(_content)
         #f.close()

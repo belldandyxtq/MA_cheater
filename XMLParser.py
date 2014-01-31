@@ -50,8 +50,14 @@ class SAXParser(Parser):
         
     def start_parse(self,data,list):
         self.__handler.setList(list)
-        xml.sax.parseString(data, self.__handler)
-        return self.__handler.getList()
+        try:
+            xml.sax.parseString(data, self.__handler)
+        except:
+            raise RuntimeError
+        try:
+            return self.__handler.getList()
+        except:
+            raise ValueError
         
 class DOMParser(Parser):
     
@@ -60,29 +66,30 @@ class DOMParser(Parser):
         
     def start_parse(self,data,list):
         import types
-        self.__dom=parseString(data)
-        return self.__find(self.__dom,list)
+        try:
+            self.__dom=parseString(data)
+        except:
+            raise RuntimeError
+        try:
+            return self.__find(self.__dom,list)
+        except:
+            raise ValueError
         
     def __find(self,node,list):
-        for each in list:
-            _childs=node.getElementsByTagName(each)
-            for i in _childs:
-                if type(list[each]) == type({}):
-                    if type(list[each]) == types.TupleType:
-                        list[each].appand(self.__find(i,list[each]))
-                    else:
-                        list[each]=self.__find(i,list[each])
-                else:
-                    if type(list[each]) == types.TupleType:
-                        list[each].appand(i.nodeValue)
-                    else:
-                        list[each]=i.nodeValue
-        return list
+        _ans={}
+        for _attr in list:
+            _now=node.getElementsByTagName(_attr)
+            if 1 == len(_now[0].childNodes):
+                _ans[_attr]=_now[0].childNodes[0].nodeValue
+            elif 1 < len(_now[0].childNodes):
+                _ans[_attr]=[]
+                for _child in _now:
+                    _ans[_attr].append(self.__find(_child, list[_attr]))
+        return _ans
     
-
 if __name__=='__main__':
-    parser=DOMParser()
-    f=open('D:/milliondata/fairy_select.xml','r')
-    list=[{'fairy':[{'serial_id':[]}],'put_down':[]}]
+    parser=SAXParser()
+    f=open('/Users/xtq/Downloads/a.xml','r')
+    list={'fairy_event':{'fairy':['serial_id','name'],'put_down':None}}
     list=parser.start_parse(f.read(),list)
     f.close()

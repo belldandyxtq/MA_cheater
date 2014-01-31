@@ -16,6 +16,7 @@ class Client():
         self.__location = location
         self.__poster = Connecter.poster(location,username)
         self.__player = Player.Player(self.__poster)
+        self.__session_file=getattr(Const,'SESSION')
     #log in
     def login(self, username, passwd):
         if self.__read_seesion():
@@ -43,16 +44,20 @@ class Client():
         #list = _parser.get_data(list)
     def explore(self):
         #self.__player.explore()
-        self.__player.fairy()
+        try:
+            self.__player.fairy()
+        except RuntimeError:
+            os.remove(self.__session_file)
+            self.login()
         
     def __save_session(self):
-        f=open('D:/million/session','w')
+        f=open(self.__session_file,'w')
         f.write("%s:%s" %('cookie',self.__cookie))
         f.close()
         
     def __read_seesion(self):
-        if os.path.exists('D:/million/session'):
-            f=open('D:/million/session','r')
+        if os.path.exists(self.__session_file):
+            f=open(self.__session_file,'r')
             self.__cookie=f.read().split(':')[1]
             f.close()
             self.__poster.updata_header('Cookie', self.__cookie)

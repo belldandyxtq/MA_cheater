@@ -34,5 +34,10 @@ HEADER = {'Accept-Encoding': 'gzip, deflate',
           'User-Agent': 'Million/250 (SBM203SH; SBM203SH; 4.1.2) SBM/SBM203SH/SBM203SH:4.1.2/S0024/00.00.00:user/release-keys GooglePlay',
           'Content-Type': 'application/x-www-form-urlencoded'
           }
+DIR='Users/xtq/million/'
 
-LOGFILE = 'D:/million/log'
+LOGFILE = DIR+'log'
+
+SESSION=DIR+'session'
+
+
