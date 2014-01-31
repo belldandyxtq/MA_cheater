@@ -41,7 +41,8 @@ class Client():
         self.__player.explore()
 
 if __name__ == '__main__':
-
+    username = 'xtqdummy2'
+    passwd = 'XtqXds05291224'
     MA_client = Client('jp',username)
     MA_client.login(username, passwd)
     MA_client.explore()

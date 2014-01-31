@@ -50,11 +50,13 @@ class Player():
         f=open('D:/milliondata/explore%s%s' % (floorID,list['progress'][0]),'w')
         f.write(_content)
         f.close()
+        return list['progress'][0]
         
     def explore(self):
         _area=self.__get_area()
         self.__get_floor('108001')
-        self.__do_explore('108001','1')
+        while '100' != self.__do_explore('108001','1'):
+            pass
         
 if __name__ == '__main__':
     player=Player()
