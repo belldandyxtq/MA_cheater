@@ -5,7 +5,8 @@ Created on 2014-1-30
 '''
 import xml.sax
 
-
+#private
+#used to collect data
 class Handler(xml.sax.handler.ContentHandler):
 
     def __init__(self):
@@ -29,19 +30,20 @@ class Handler(xml.sax.handler.ContentHandler):
             
     def getList(self):
         return self.__list
-    
+
+#public
+#used to parse XML and get data
+#usage:
+#create object ,start_parse: XMLDATA, a dictionary store attribute to get(string : tupple)
 class XMLParser():
     def __init__(self):
         self.__handler=Handler()
         
-    def setList(self,list):
+    def start_parse(self,data,list):
         self.__handler.setList(list)
-
-    def getList(self):
-        return self.__handler.getList()
-    
-    def start_parse(self,data):
         xml.sax.parseString(data, self.__handler)
+        return self.__handler.getList()
+        
         
 if __name__=='__main__':
     parser=XMLParser()
@@ -51,4 +53,3 @@ if __name__=='__main__':
     parser.start_parse(f.read())
     list=parser.getList()
     f.close()
-        
