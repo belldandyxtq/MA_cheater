@@ -5,10 +5,11 @@ Created on 2014-1-30
 '''
 #!C:/python27
 import base64
-
+import logging
 from Crypto.Cipher import AES
 import Const
 
+logger = logging.getLogger('MALogger')
 class Crypter():
     
     def __init__(self,location,username):

@@ -4,8 +4,9 @@ Created on 2014-1-30
 @author: bell
 '''
 import xml.sax
+import logging
 from xml.dom.minidom import parseString
-
+logger = logging.getLogger('MALogger')
 #private
 #used to collect data
 
@@ -65,31 +66,29 @@ class DOMParser(Parser):
         self.__dom=None
         
     def start_parse(self,data,list):
-        import types
         try:
             self.__dom=parseString(data)
         except:
             raise RuntimeError
-        try:
-            return self.__find(self.__dom,list)
-        except:
-            raise ValueError
+        import types
+        return self.__find(self.__dom,list)
         
     def __find(self,node,list):
         _ans={}
         for _attr in list:
             _now=node.getElementsByTagName(_attr)
-            if 1 == len(_now[0].childNodes):
-                _ans[_attr]=_now[0].childNodes[0].nodeValue
-            elif 1 < len(_now[0].childNodes):
-                _ans[_attr]=[]
+            _ans[_attr]=[]
+            if type({}) != type(list):
+                for _child in _now:
+                    _ans[_attr].append(_child.childNodes[0].nodeValue)
+            else:
                 for _child in _now:
                     _ans[_attr].append(self.__find(_child, list[_attr]))
         return _ans
     
 if __name__=='__main__':
-    parser=SAXParser()
-    f=open('/Users/xtq/Downloads/a.xml','r')
-    list={'fairy_event':{'fairy':['serial_id','name'],'put_down':None}}
+    parser=DOMParser()
+    f=open('D:/milliondata/areabell','r')
+    list={'area_info_list':{'area_info':['id','name','prog_area','prog_item','area_type']}}
     list=parser.start_parse(f.read(),list)
     f.close()

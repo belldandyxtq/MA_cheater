@@ -10,9 +10,11 @@ import Cipher
 import Const
 import time
 
+import logging
+
 # post data to server and parse response
 
-
+logger = logging.getLogger('MALogger')
 class poster():
 
     def __init__(self, location,username):
