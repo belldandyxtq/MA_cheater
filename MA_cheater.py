@@ -93,8 +93,6 @@ def setlogger(consoleLogger=True,fileLogger=False):
     
 if __name__ == '__main__':
 
-    username = 'belldandyxtq'
-    passwd = 'XtqXds05291224'
     setlogger()
     MA_client = Client('jp',username)
     MA_client.login(username, passwd)
