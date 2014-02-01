@@ -51,14 +51,40 @@ class User():
     def update_info(self,info):
         self.__set_info(info)
 
+class Event_Handler():
+    def __init__(self):
+        pass
+    def update_info(self):
+        pass
+
 class Player():
     def __init__(self,poster):
         self.__poster=poster
-        #self.__user_info=User()
+        self.__user_info=None
+        self.__area=None
+        self.event=Event_Handler()
     
     def explore(self):
         self.__area=area_explorer(self.__poster)
-        self.__area.do_explore(self.__poster)
+        self.__area.do_explore()
+    
+    def __get_info(self):
+        _url='menu'
+        logger.info('go to main menu')
+        _content,_header=self.__poster.post(_url)
+        _list={}
+        f=open('/Users/xtq/million/menu','w')
+        f.write(_content)
+        f.close()
+        _data=domParser.start_parse(_content,_list)
+        return _data
+    
+    def set_user_info(self):
+        if None == self.__user_info:
+            self.__user_info=self.__get_info()
+        else:
+            self.__user_info.update(self.__get_info())
+        
         
 class floor_explorer(explorer):
     
@@ -68,6 +94,8 @@ class floor_explorer(explorer):
         self.__area_name=areaName
         self.__poster=poster
         self.__floor_list= self.__get_info()
+        self.__now_guild=''
+        self.__now_progress=''
         
     def __get_info(self):
         _url='floor'
@@ -76,18 +104,20 @@ class floor_explorer(explorer):
         _content,_header=self.__poster.post(_url,postdata = _postdata)
         _list={'floor_info':['id','progress','cost']}
         _data=domParser.start_parse(_content,_list)
-        f=open('D:/milliondata/floor1','w')
-        f.write(_content)
-        f.close()
+        #f=open('D:/milliondata/floor1','w')
+        #f.write(_content)
+        #f.close()
         return  _data['floor_info']
     
-    def do_explore(self):
-        for each_floor in self.__floor_list:
-            if '100' != each_floor['progress'][0]:
-                self.__now_guild=guild_explorer(self.__area_id,self.__area_name,each_floor['id'][0],self.__poster)
-                break
-        if None != self.__now_guild:
-            return self.__now_guild.do_explore()
+    def do_explore(self,update=True):
+        if update or '100' == self.__now_progress:
+            for each_floor in self.__floor_list:
+                if '100' != each_floor['progress'][0]:
+                    self.__now_guild=guild_explorer(self.__area_id,self.__area_name,each_floor['id'][0],self.__poster)
+                    self.__now_progress=each_floor['progress'][0]
+                    break
+        _event , self.__now_progress=self.__now_guild.do_explore()
+        return _event,self.__now_progress
     
 class guild_explorer(explorer):
     
@@ -109,13 +139,13 @@ class guild_explorer(explorer):
     def do_explore(self,auto_build='1',auto_explore='0'):
         _url='guild_explore'
         _postdata={'area_id':self.__area_ID,
-                   'floor_id':self.__floor_ID,
-                   'auto_build':auto_build,
-                   'auto_explore':auto_explore}
+                    'floor_id':self.__floor_ID,
+                    'auto_build':auto_build,
+                    'auto_explore':auto_explore}
         _content,_header=self.__poster.post(_url,postdata = _postdata)
         _list={'your_data':{'ac':'current','bc':'current','free_ap_bc_point':None,},'explore':['progress',]}
-        _data=saxParser.start_parse(_content,_list)
-        return _data['progress'][0],_event
+        _data=domParser.start_parse(_content,_list)
+        return _data,_data['progress'][0]
         
     
 class area_explorer(explorer):
@@ -124,6 +154,8 @@ class area_explorer(explorer):
         logger.info('start to explorer')
         self.__poster=poster
         self.__area_list=self.__get_info()
+        self.__now_floor=''
+        self.__now_progress=''
         
     def __get_info(self):
         _url='area'
@@ -131,12 +163,14 @@ class area_explorer(explorer):
         _list={'area_info_list':{'area_info':['id','name','prog_area','prog_item','area_type']}}
         return domParser.start_parse(_content,_list)['area_info_list'][0]
     
-    def do_explore(self,freeExplore):
-        for each_area in self.__area_list['area_info']:
-            if '100' != each_area['prog_area'][0]:
-                self.__now_floor=floor_explorer(each_area['id'][0],each_area['name'][0],self.__poster)
-                break
-        return self.__now_floor.do_explore()
+    def do_explore(self,freeExplore,update=True):
+        if update or '100' == self.__now_progress:
+            for each_area in self.__area_list['area_info']:
+                if '100' != each_area['prog_area'][0]:
+                    self.__now_floor=floor_explorer(each_area['id'][0],each_area['name'][0],self.__poster)
+                    self.__now_progress=each_floor['progress'][0]
+        _event , self.__now_progress = self.__now_floor.do_explore()
+        return _event , self.__now_progress
                 
 class fairy(enemy):
     

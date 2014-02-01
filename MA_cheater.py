@@ -45,6 +45,7 @@ class Client():
             logger.info('get configure')
             self.__get_configure(_content)
             self.__save_session()
+        self.__player.set_user_info()
 
     def __get_configure(self, _content):
         list = {'party_name':[]}
