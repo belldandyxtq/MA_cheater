@@ -4,7 +4,7 @@ Created on 2014-1-31
 @author: bell
 '''
 #!C:/python27
-import Connecter
+from Connecter import Poster
 import Const
 import logging
 #explorer interface
@@ -40,7 +40,7 @@ class User():
         
     def __set_info(self,info):
         logger.info('set user info')
-        self.ac=info('ac')
+        self.ap=info('ap')
         self.bc=info('bc')
         self.gold=info('gold')
         self.gacha_ticket=info('gacha_ticket')
@@ -56,15 +56,16 @@ class Event_Handler():
         pass
 
 class Player():
-    def __init__(self,poster):
-        self.__poster=poster
+    def __init__(self,location,username,passwd):
+        self.__poster=Poster(location,username,passwd)
         self.__user_info=None
         self.__area=None
         self.event=Event_Handler()
+        
     def login(self):
+        _data=self.__poster.login()
         logger.info('get configure')
-        self.__get_configure(_content)
-        self.__save_session()
+        #self.__get_configure(_data)
             
     def explore(self):
         self.__area=area_explorer(self.__poster)
@@ -102,10 +103,9 @@ class floor_explorer(explorer):
     def __get_info(self):
         _url='floor'
         _postdata={'area_id':self.__area_id}
-        logger.debug('send get_floor post area id=%s' % (self.__area_id))
-        _content,_header=self.__poster.post(_url,postdata = _postdata)
         _list={'floor_info':['id','progress','cost']}
-        _data=domParser.start_parse(_content,_list)
+        logger.debug('send get_floor post area id=%s' % (self.__area_id))
+        _data , _head=self.__poster.post(_url,'dom',_list,postdata = _postdata)
         #f=open('D:/milliondata/floor1','w')
         #f.write(_content)
         #f.close()
@@ -144,10 +144,10 @@ class guild_explorer(explorer):
                     'floor_id':self.__floor_ID,
                     'auto_build':auto_build,
                     'auto_explore':auto_explore}
-        _content,_header=self.__poster.post(_url,postdata = _postdata)
-        _list={'your_data':{'ac':'current','bc':'current','free_ap_bc_point':None,},'explore':['progress',]}
-        _data=domParser.start_parse(_content,_list)
-        return _data,_data['progress'][0]
+        _list={'your_data':{'ap':['current'],'bc':['current'],'free_ap_bc_point':''},'explore':['progress']}
+        _data , _head=self.__poster.post(_url,'dom',_list,postdata = _postdata)
+        _progress=_data['explore'][0]
+        return _data,_progress['progress'][0]
         
     
 class area_explorer(explorer):
@@ -161,16 +161,18 @@ class area_explorer(explorer):
         
     def __get_info(self):
         _url='area'
-        _content,_header=self.__poster.post(_url)
         _list={'area_info_list':{'area_info':['id','name','prog_area','prog_item','area_type']}}
-        return domParser.start_parse(_content,_list)['area_info_list'][0]
+        _content,_head=self.__poster.post(_url,'dom',_list)
+
+        return _content['area_info_list'][0]
     
-    def do_explore(self,freeExplore,update=True):
+    def do_explore(self,freeExplore=False,update=True):
         if update or '100' == self.__now_progress:
             for each_area in self.__area_list['area_info']:
                 if '100' != each_area['prog_area'][0]:
                     self.__now_floor=floor_explorer(each_area['id'][0],each_area['name'][0],self.__poster)
-                    self.__now_progress=each_floor['progress'][0]
+                    self.__now_progress=each_area['prog_area'][0]
+                    break
         _event , self.__now_progress = self.__now_floor.do_explore()
         return _event , self.__now_progress
                 

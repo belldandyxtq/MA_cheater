@@ -78,7 +78,7 @@ class DOMParser(Parser):
         for _attr in list:
             _now=node.getElementsByTagName(_attr)
             _ans[_attr]=[]
-            if type({}) != type(list):
+            if type([]) == type(list) or type('') == type(list[_attr]):
                 for _child in _now:
                     _ans[_attr].append(_child.childNodes[0].nodeValue)
             else:

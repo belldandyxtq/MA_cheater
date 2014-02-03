@@ -3,25 +3,19 @@ Created on 2014-1-30
 
 @author: bell
 '''
-import Connecter
-import Player
+
+from Player import Player
 import Const
-import os
 import logging
 
 logger = logging.getLogger('MALogger')
 class Client():
 
-    def __init__(self, location,username):
-        self.__location = location
-        self.__poster = Connecter.poster(location,username)
-        self.__player = Player.Player(self.__poster)
-        self.__session_file=getattr(Const,'SESSION')
-        self.__username=''
-        self.__passwd=''
+    def __init__(self, location,username,passwd):
+        self.__player = Player(location,username,passwd)
     #log in
-    def login(self,username='',passwd=''):
-        self.__player.login(username or self.__username,passwd or self.__passwd)
+    def login(self):
+        self.__player.login()
         
     def __get_configure(self, _content):
         list = {'party_name':[]}
@@ -53,6 +47,8 @@ def setlogger(consoleLogger=True,fileLogger=False):
     
 if __name__ == '__main__':
     setlogger()
-    MA_client = Client('jp',username)
-    MA_client.login(username, passwd)
+    username='xtqdummy2'
+    password='XtqXds05291224'
+    MA_client = Client('jp',username,password)
+    MA_client.login()
     MA_client.explore()
