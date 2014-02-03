@@ -6,13 +6,11 @@ Created on 2014-1-31
 #!C:/python27
 import Connecter
 import Const
-from XMLParser import SAXParser,DOMParser
 import logging
 #explorer interface
 
 logger = logging.getLogger('MALogger')
-saxParser = SAXParser()
-domParser = DOMParser()
+
 class explorer:
     def __init__(self):
         pass
@@ -63,7 +61,11 @@ class Player():
         self.__user_info=None
         self.__area=None
         self.event=Event_Handler()
-    
+    def login(self):
+        logger.info('get configure')
+        self.__get_configure(_content)
+        self.__save_session()
+            
     def explore(self):
         self.__area=area_explorer(self.__poster)
         self.__area.do_explore()
@@ -73,10 +75,10 @@ class Player():
         logger.info('go to main menu')
         _content,_header=self.__poster.post(_url)
         _list={}
+        _data=domParser.start_parse(_content,_list)
         f=open('/Users/xtq/million/menu','w')
         f.write(_content)
         f.close()
-        _data=domParser.start_parse(_content,_list)
         return _data
     
     def set_user_info(self):

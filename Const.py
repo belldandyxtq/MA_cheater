@@ -23,7 +23,7 @@ SERVER_ADDRESS = {'jp': 'http://web.million-arthurs.com/connect/app/'}
 APP_ADDRESS = {'area':'exploration/area?cyt=1',
                'login':'login?cyt=1',
                'check_inspection':'check_inspection?cyt=1',
-               'menu':'top_menu?cyt=1',
+               'menu':'mainmenu?cyt=1',
                'floor':'exploration/floor?cyt=1',
                'get_floor':'exploration/get_floor?cyt=1',
                'guild_explore':'exploration/guild_explore?cyt=1',
