@@ -65,6 +65,7 @@ class Player():
     def login(self):
         _data=self.__poster.login()
         logger.info('get configure')
+        self.set_user_info()
         #self.__get_configure(_data)
             
     def explore(self):
