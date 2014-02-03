@@ -25,7 +25,9 @@ class Client():
         #list = _parser.get_data(list)
     def explore(self):
         try:
-            self.__player.explore()
+            #self.__player.explore()
+            #self.__player.private_fairy()
+            self.__player.guild_fairy()
         except RuntimeError:
             self.relogin()
         #self.__player.fairy()
@@ -47,8 +49,7 @@ def setlogger(consoleLogger=True,fileLogger=False):
     
 if __name__ == '__main__':
     setlogger()
-    username='xtqdummy2'
-    password='XtqXds05291224'
+
     MA_client = Client('jp',username,password)
     MA_client.login()
     MA_client.explore()

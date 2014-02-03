@@ -79,7 +79,7 @@ class Poster():
         _url = self.__server + getattr(Const,'APP_ADDRESS')[destination]
         _data = None
         time.sleep(1)
-        if destination in ['login','register']:
+        if destination in ['login','register','menu']:
             _use_2nd_key=False
         else:
             _use_2nd_key=True

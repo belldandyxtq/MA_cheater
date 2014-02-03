@@ -76,14 +76,17 @@ class DOMParser(Parser):
     def __find(self,node,list):
         _ans={}
         for _attr in list:
-            _now=node.getElementsByTagName(_attr)
-            _ans[_attr]=[]
-            if type([]) == type(list) or type('') == type(list[_attr]):
-                for _child in _now:
-                    _ans[_attr].append(_child.childNodes[0].nodeValue)
+            if '*' == _attr:
+                _ans['*']=node.toxml()
             else:
-                for _child in _now:
-                    _ans[_attr].append(self.__find(_child, list[_attr]))
+                _now=node.getElementsByTagName(_attr)
+                _ans[_attr]=[]
+                if type([]) == type(list) or type('') == type(list[_attr]):
+                    for _child in _now:
+                        _ans[_attr].append(_child.childNodes[0].nodeValue)
+                else:
+                    for _child in _now:
+                        _ans[_attr].append(self.__find(_child, list[_attr]))
         return _ans
     
 if __name__=='__main__':

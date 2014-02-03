@@ -36,15 +36,16 @@ class enemy:
 
 class User():
     def __init__(self,info):
-        __set_info(info)
+        self.__set_info(info)
+        self.gacha_ticket=info['gacha_ticket']
+        self.name=info['name']
         
     def __set_info(self,info):
         logger.info('set user info')
-        self.ap=info('ap')
-        self.bc=info('bc')
-        self.gold=info('gold')
-        self.gacha_ticket=info('gacha_ticket')
-        self.name=info('name')
+        self.ap=info['ap']
+        self.bc=info['bc']
+        self.gold=info['gold']
+
     
     def update_info(self,info):
         self.__set_info(info)
@@ -75,20 +76,23 @@ class Player():
     def __get_info(self):
         _url='menu'
         logger.info('go to main menu')
-        _content,_header=self.__poster.post(_url)
-        _list={}
-        _data=domParser.start_parse(_content,_list)
-        f=open('/Users/xtq/million/menu','w')
-        f.write(_content)
-        f.close()
-        return _data
+        _list={'your_data':{'name':[],'townlevel':'','gold':'','cp':'','ap':['current','max'],'bc':['current','max'],
+                           'free_ap_bc_point':[],'gacha_ticket':[]}}
+        _content,_header=self.__poster.post(_url,list=_list,use_2nd_key=False)
+        return _content['your_data'][0]
     
     def set_user_info(self):
         if None == self.__user_info:
-            self.__user_info=self.__get_info()
+            self.__user_info=User(self.__get_info())
         else:
             self.__user_info.update(self.__get_info())
+            
+    def private_fairy(self):
+        self.__fairy=fairy(self.__poster)
+        self.__fairy.battle()
         
+    def guild_fairy(self):
+        self.__guild_fairy=guid_fairy(self.__poster)
         
 class floor_explorer(explorer):
     
@@ -107,9 +111,6 @@ class floor_explorer(explorer):
         _list={'floor_info':['id','progress','cost']}
         logger.debug('send get_floor post area id=%s' % (self.__area_id))
         _data , _head=self.__poster.post(_url,'dom',_list,postdata = _postdata)
-        #f=open('D:/milliondata/floor1','w')
-        #f.write(_content)
-        #f.close()
         return  _data['floor_info']
     
     def do_explore(self,update=True):
@@ -179,26 +180,123 @@ class area_explorer(explorer):
                 
 class fairy(enemy):
     
-    def __init__(self):
-        self.__info=self.__get_info()
-        
+    def __init__(self,poster):
+        self.__poster=poster
+        self.__fairy_list,self.__rewards = self.__get_info()
+
     def __get_info(self):
         _url='fairy_select'
-        #_postdata={'area_id':areaID,
-        #           'floor_id':floorID,
-        #           'auto_build':auto_build,
-        #           'auto_explore':auto_explore}
+        _list={'fairy_select': {'user': ['id', 'name'],'fairy_event': {'fairy': ['serial_id','name', 'lv', 'hp', 'hp_max', 'discoverer_id', 'rare_flg'],'put_down': '','reward_status': ''}}}
+        _content,_header=self.__poster.post(_url,postdata={},list=_list)
+        return self.__change_list(_content['fairy_select'][0])
+        
+    def __change_list(self,data):
+        _rewards=[]
+        _user={}
+        for each_user in data['user']:
+            _user[each_user['id'][0]]=each_user['name'][0]
+        _fairy=[]
+        for each_fairy in data['fairy_event']:
+            _now_fairy=each_fairy['fairy'][0]
+            _fairy_data={}
+            _fairy_data['serial_id']=_now_fairy['serial_id'][0]
+            _fairy_data['name']=_now_fairy['name'][0]
+            _fairy_data['lv']=_now_fairy['lv'][0]
+            _fairy_data['hp']=_now_fairy['hp'][0]
+            _fairy_data['hp_max']=_now_fairy['hp_max'][0]
+            _fairy_data['rare_flg']=_now_fairy['rare_flg'][0]
+            _fairy_data['discoverer_id']=_now_fairy['discoverer_id'][0]
+            _fairy_data['discoverer_name'] = _user[_fairy_data['discoverer_id']]
+            _fairy_data['put_down']=each_fairy['put_down'][0]
+            _fairy_data['reward_status']=each_fairy['reward_status'][0]
+
+            if '0' != _fairy_data['reward_status']:
+                _rewards.append(_fairy_data['serial_id'])
+            if '0' != _fairy_data['hp']:
+                _fairy.append(_fairy_data)
+        return _fairy,_rewards
+        
+    def __do_battle(self,serial_id,user_id,deck_number='1'):
+        _url='fairy_top'
         _content,_header=self.__poster.post(_url)
-        _list={'discoverer_id':[],
-               'serial_id':[],}
-        _data=saxParser.start_parse(_content,_list)
-            
-        #f=open('D:/milliondata/fairy_select','w')
-        #f.write(_content)
-        #f.close()
+        _url='fairy_battle'
+        _postdata={'no':deck_number,
+                   'serial_id':serial_id,
+                   'user_id':user_id}
+        _list={'your_data':{'name':[],'townlevel':'','gold':'','cp':'','ap':['current','max'],'bc':['current','max'],
+                           'free_ap_bc_point':[],'gacha_ticket':[]},'fairy':['serial_id','hp','hp_max']}
+        return self.__poster.post(_url,postdata=_postdata,list=_list)
+        
     def battle(self):
-        pass
-    
+        for fairy in self.__fairy_list:
+            if True:
+                logger.info('fight with %s \'s fairy' % (fairy['discoverer_name']))
+                self.__do_battle(fairy['serial_id'], fairy['discoverer_id'])
+                
+    def good(self,serial_id,user_id,dialog='1'):
+        _url='battle_good'
+        _postdata={'dialog ':dialog,
+                   'serial_id':serial_id,
+                   'user_id':user_id}
+        return self.__poster.post(_url)
+                
+class guid_fairy(enemy):
+        
+    def __init__(self,poster):
+        self.__poster=poster
+        self.__fairy_list,self.__rewards = self.__get_info()
+
+    def __get_info(self):
+        _url='guild_top'
+        _list={'*'}
+        _content,_header=self.__poster.post(_url,postdata={},list=_list)
+        return self.__change_list(_content['fairy_select'][0])
+        
+    def __change_list(self,data):
+        _rewards=[]
+        _user={}
+        for each_user in data['user']:
+            _user[each_user['id'][0]]=each_user['name'][0]
+        _fairy=[]
+        for each_fairy in data['fairy_event']:
+            _now_fairy=each_fairy['fairy'][0]
+            _fairy_data={}
+            _fairy_data['serial_id']=_now_fairy['serial_id'][0]
+            _fairy_data['name']=_now_fairy['name'][0]
+            _fairy_data['lv']=_now_fairy['lv'][0]
+            _fairy_data['hp']=_now_fairy['hp'][0]
+            _fairy_data['hp_max']=_now_fairy['hp_max'][0]
+            _fairy_data['rare_flg']=_now_fairy['rare_flg'][0]
+            _fairy_data['discoverer_id']=_now_fairy['discoverer_id'][0]
+            _fairy_data['discoverer_name'] = _user[_fairy_data['discoverer_id']]
+            _fairy_data['put_down']=each_fairy['put_down'][0]
+            _fairy_data['reward_status']=each_fairy['reward_status'][0]
+
+            if '0' != _fairy_data['reward_status']:
+                _rewards.append(_fairy_data['serial_id'])
+            if '0' != _fairy_data['hp']:
+                _fairy.append(_fairy_data)
+        return _fairy,_rewards
+        
+    def __do_battle(self,serial_id,user_id,deck_number='1'):
+        _url='fairy_top'
+        _content,_header=self.__poster.post(_url)
+        _url='fairy_battle'
+        _postdata={'no':deck_number,
+                   'serial_id':serial_id,
+                   'user_id':user_id}
+        _list={'your_data':{'name':[],'townlevel':'','gold':'','cp':'','ap':['current','max'],'bc':['current','max'],
+                           'free_ap_bc_point':[],'gacha_ticket':[]},'fairy':['serial_id','hp','hp_max']}
+        _content,_header=self.__poster.post(_url,postdata=_postdata,list=_list)
+        f=open('D:\\milliondata\\battle','w')
+        f.write(_content['*'])
+        f.close()
+        
+    def battle(self):
+        for fairy in self.__fairy_list:
+            if True:
+                logger.info('fight with %s \'s fairy' % (fairy['discoverer_name']))
+                self.__do_battle(fairy['serial_id'], fairy['discoverer_id'])
         
 if __name__ == '__main__':
     player=Player()

@@ -27,15 +27,18 @@ APP_ADDRESS = {'area':'exploration/area?cyt=1',
                'floor':'exploration/floor?cyt=1',
                'get_floor':'exploration/get_floor?cyt=1',
                'guild_explore':'exploration/guild_explore?cyt=1',
-               'fairy_top':'private_fairy/private_fairy_select?cyt=1',
+               'fairy_top':'private_fairy/private_fairy_top?cyt=1',
+               'battle_good':'private_fairy/private_fairy_battle_good?cyt=1',
                'fairy_select':'private_fairy/private_fairy_select?cyt=1',
-               'fairy_battle':'private_fairy/private_fairy_battle?cyt=1'}
+               'fairy_battle':'private_fairy/private_fairy_battle?cyt=1',
+               'guild_top':'guild/guild_top?cyt=1',
+               'guid_fairy_battle':'fairy/guid_fairy_battle?cyt=1'}
 
 HEADER = {'Accept-Encoding': 'gzip, deflate',
           'User-Agent': 'Million/250 (SBM203SH; SBM203SH; 4.1.2) SBM/SBM203SH/SBM203SH:4.1.2/S0024/00.00.00:user/release-keys GooglePlay',
           'Content-Type': 'application/x-www-form-urlencoded'
           }
-DIR='/Users/xtq/million/'
+DIR='D:/milliondata/'
 
 LOGFILE = DIR+'log'
 
